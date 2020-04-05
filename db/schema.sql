@@ -25,6 +25,3 @@ CREATE TABLE burgers (
   devoured BOOLEAN NOT NULL,
   PRIMARY KEY (id)
 );
-
--- Insert a set of records.
-INSERT INTO burgers (plan) VALUES ('Plan to fight a ninja.');

@@ -1,11 +1,11 @@
 var express = require("express");
 var exphbs = require("express-handlebars");
-var mysql = require("mysql");
-
+ 
 var app = express();
 
 // Set the port of our application
 // process.env.PORT lets the port be set by Heroku
+// this creates the tunnel to access the server
 var PORT = process.env.PORT || 8080;
 
 // Parse request body as JSON
@@ -13,34 +13,18 @@ var PORT = process.env.PORT || 8080;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+//converts public folder into local host URL
+app.use(express.static("public"));
+
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-var connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "",
-  database: "day_planner_db"
-});
+var burgerControllers = require("./controllers/burgers_controllers");
+burgerControllers(app);
 
-connection.connect(function(err) {
-  if (err) {
-    console.error("error connecting: " + err.stack);
-    return;
-  }
+app.listen(PORT, function(){
+  console.log("App is listening on http://localhost:" + PORT);
+})
 
-  console.log("connected as id " + connection.threadId);
-});
 
-// Use Handlebars to render the main index.html page with the plans in it.
-//takes the items from the plans database(table) into the index.handlebars file
-app.get("/", function(req, res) {
-  connection.query("SELECT * FROM plans;", function(err, data) {
-    if (err) {
-      return res.status(500).end(); //this means server issues or something
-    }
-
-    res.render("index", { plans: data });
-  });
-});
+ 
